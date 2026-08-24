@@ -27,6 +27,23 @@ self-contained plugin marketplace. The plugin route adds versioned releases
 (`claude plugin update`) and is the one that can ship hooks and slash commands
 later; the `skills` CLI route is the portable one. Pick either.
 
+**In [Oh My Pi](https://omp.sh)** — the same marketplace, no changes needed:
+
+```
+/marketplace add tpapamichail/claude-skills
+/marketplace install claude-skills@tpapamichail
+```
+
+omp reads `.claude-plugin/marketplace.json` as its Claude-compatible fallback and
+discovers `skills/` the same way. Two differences: skills are invoked as
+`/skill:gh-flow` rather than `/gh-flow`, and `hooks/hooks.json` is ignored — omp
+has no `SessionStart` command hooks. The same always-on rules live in
+[`rules/session-rules.md`](rules/session-rules.md) (`alwaysApply: true`), which
+omp picks up for `omp plugin link` / `extensions:` installs but **not** for
+`/marketplace install`, where marketplace roots are excluded from `rules/`
+discovery. Marketplace users still get all four skills; they just load on
+description rather than up front.
+
 ## The skills
 
 A single workflow, split by how big the work is:
@@ -171,6 +188,9 @@ claude plugin tag . --dry-run          # then drop --dry-run, add --push
 
 Bump the version in **both** `plugin.json` and the `plugins[]` entry of
 `marketplace.json`.
+
+`hooks/session-rules.md` (Claude Code) and `rules/session-rules.md` (omp) carry the
+same TDD and git flow sections — edit one, edit the other.
 
 ## License
 
