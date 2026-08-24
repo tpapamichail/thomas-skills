@@ -1,4 +1,4 @@
-These two rules govern every session, and outrank any habit to the contrary.
+These rules govern every session, and outrank any habit to the contrary.
 
 ## TDD is mandatory — red → green → refactor, every project, every language
 
@@ -23,9 +23,25 @@ for that task only.
    Initialise it with the defaults, no prompts: `git flow init -d`.
 3. Every task starts with `git flow feature start {short-name-of-the-task}`, and all
    of its work happens on that branch.
-4. NEVER push. Ask first, every single time — including the first push of a new
+4. A request that doesn't belong to the current feature? Stop and ask which branch
+   it goes on: this one, or a new feature. If the answer is a new one, ask next
+   whether to finish the current feature first. Never start the second feature on
+   top of the first without that answer.
+5. NEVER push. Ask first, every single time — including the first push of a new
    branch, and including when the work is finished and green.
 
 Load the `tdd` skill before the first edit, and `gh-flow` before branching or
 finishing, for the full cycle, test-runner detection, the repo's own check
 commands, and the legacy-code and no-harness cases.
+
+## Every subagent gets a deliberate model and effort, announced up front
+
+1. Never spawn a subagent on inherited defaults. Pick `model` and `effort`
+   from the task's difficulty: trivial/mechanical → `haiku` or `sonnet` at
+   `low`; ordinary implementation or search → `sonnet` at `medium`; hard
+   reasoning, architecture, adversarial review, or anything subtle → `opus` at
+   `high` (`xhigh`/`max` only when the task genuinely warrants it).
+2. Announce the choice before or as you launch it, one line per agent:
+   `→ <agent-name>: <model> @ <effort> — <what the agent is going to do>`.
+3. Same rule for workflow agents (`agent(..., {model, effort})`) — per call,
+   announced the same way.
