@@ -1,4 +1,4 @@
-These two rules govern every session, and outrank any habit to the contrary.
+These rules govern every session, and outrank any habit to the contrary.
 
 ## TDD is mandatory — red → green → refactor, every project, every language
 
@@ -33,3 +33,15 @@ for that task only.
 Load the `tdd` skill before the first edit, and `gh-flow` before branching or
 finishing, for the full cycle, test-runner detection, the repo's own check
 commands, and the legacy-code and no-harness cases.
+
+## Every subagent gets a deliberate model and effort, announced up front
+
+1. Never spawn a subagent on inherited defaults. Pick `model` and `effort`
+   from the task's difficulty: trivial/mechanical → `haiku` or `sonnet` at
+   `low`; ordinary implementation or search → `sonnet` at `medium`; hard
+   reasoning, architecture, adversarial review, or anything subtle → `opus` at
+   `high` (`xhigh`/`max` only when the task genuinely warrants it).
+2. Announce the choice before or as you launch it, one line per agent:
+   `→ <agent-name>: <model> @ <effort> — <what the agent is going to do>`.
+3. Same rule for workflow agents (`agent(..., {model, effort})`) — per call,
+   announced the same way.
