@@ -1,11 +1,12 @@
 {
   "name": "@tpapamichail/thomas-skills",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "description": "Portable test-first workflow and agent-first model routing for coding harnesses.",
   "license": "MIT",
   "files": [
+    "plugin.json",
     "extensions/pi-agent-routing.mjs",
     "routing/agents.json",
     "routing/model-tiers.json",

@@ -39,6 +39,15 @@ effort respectively.
 /marketplace install agent-routing@tpapamichail
 ```
 
+Restart OMP after the first install because `thomas-skills` includes an extension
+module. For an existing installation, refresh the catalog and upgrade the plugin:
+
+```text
+/marketplace update tpapamichail
+/marketplace upgrade --scope user thomas-skills@tpapamichail
+/reload-plugins
+```
+
 omp reads the native [`.omp-plugin/marketplace.json`](.omp-plugin/marketplace.json).
 The workflow plugin injects the standing routing policy but leaves omp's built-in
 `task` tool intact. The agent plugin uses omp's `@smol`, `@task`, and `@slow`
@@ -71,7 +80,7 @@ primary agent's model. Re-run the command after changing the canonical catalog.
 Pi has no built-in subagent runtime, so this repository is also a Pi package:
 
 ```bash
-pi install git:github.com/tpapamichail/thomas-skills@v1.1.0
+pi install git:github.com/tpapamichail/thomas-skills@v1.1.1
 ```
 
 Configure all three model tiers globally in

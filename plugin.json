@@ -1,8 +1,8 @@
 {
-  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
-  "name": "agent-routing",
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "thomas-skills",
   "version": "1.1.1",
-  "description": "Canonical Claude Code subagents with explicit model and effort tiers.",
+  "description": "Portable test-first GitHub workflow and agent-routing skills for coding harnesses.",
   "author": {
     "name": "Thomas Papamichail",
     "url": "https://github.com/tpapamichail"
@@ -10,5 +10,5 @@
   "homepage": "https://github.com/tpapamichail/thomas-skills",
   "repository": "https://github.com/tpapamichail/thomas-skills",
   "license": "MIT",
-  "keywords": ["agents", "routing", "models", "claude-code"]
+  "keywords": ["tdd", "git-flow", "github", "agents", "routing"]
 }

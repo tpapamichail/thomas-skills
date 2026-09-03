@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "agent-routing",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Canonical OMP task agents with explicit role-backed model tiers.",
   "author": {
     "name": "Thomas Papamichail",
