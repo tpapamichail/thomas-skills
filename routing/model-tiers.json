@@ -1,0 +1,24 @@
+{
+  "$schema": "./model-tiers.schema.json",
+  "schemaVersion": 1,
+  "tiers": [
+    {
+      "id": "fast",
+      "rank": 0,
+      "effort": "low",
+      "description": "Bounded lookup, deterministic operations, known commands, and low-risk evidence collection."
+    },
+    {
+      "id": "standard",
+      "rank": 1,
+      "effort": "medium",
+      "description": "Multi-step execution, synthesis, implementation, and ordinary review."
+    },
+    {
+      "id": "deep",
+      "rank": 2,
+      "effort": "high",
+      "description": "High ambiguity, large blast radius, architecture, adversarial analysis, and security-critical reasoning."
+    }
+  ]
+}

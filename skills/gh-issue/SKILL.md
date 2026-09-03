@@ -77,6 +77,10 @@ If the issue has no clear acceptance criteria, ask before planning.
 Run the repo's own commands (read `package.json` scripts / `Makefile` / CI config —
 don't guess). Delegate the runs to a test-runner sub-agent:
 
+This checklist is the task's final general gate; normal TDD cycles do not pre-run it.
+If `gh-flow finish` follows without another file change, it reuses this visible
+evidence instead of repeating the same checks.
+
 - [ ] Lint / format
 - [ ] Type-check / build
 - [ ] Unit tests
@@ -84,8 +88,10 @@ don't guess). Delegate the runs to a test-runner sub-agent:
 - [ ] Tests added/updated for the affected area
 - [ ] Commit messages reference `#<N>`
 
-Report each suite's pass/fail with pasted output. **Never claim "done" or "works"
-without evidence.** Then ask the developer whether they want a PR.
+Report each suite's command, pass/fail status, and test count from visible runner
+evidence. Attach raw output only when the tool transcript is unavailable or
+truncated. **Never claim "done" or "works" without evidence.** Then ask the
+developer whether they want a PR.
 
 ## Label → code area
 

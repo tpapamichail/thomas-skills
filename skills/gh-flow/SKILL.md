@@ -137,10 +137,15 @@ in rough order of precedence:
 
 | Source | Look for |
 |---|---|
+| `.github/workflows/*.yml` | authoritative — the complete gate CI runs on the PR |
 | `package.json` | `scripts`: `lint`, `typecheck`, `test`, `test:e2e`, `build` |
 | `Makefile` | `make test`, `make lint`, `make check` |
 | `composer.json` | `scripts`: `test`, `phpstan`, `phpcs` |
-| `.github/workflows/*.yml` | the authoritative list — CI runs these on the PR |
+
+This is the task's final general gate. Normal TDD cycles deliberately run only the
+focused test and smallest affected scope. If `/gh-issue done` already ran these exact
+checks against the unchanged final tree, reuse its visible evidence instead of
+running the same gate twice.
 
 Rules:
 
@@ -152,7 +157,9 @@ Rules:
   fixes deliberately.
 - In a worktree with a non-standard `node_modules`, call binaries directly
   (`./node_modules/.bin/…`).
-- **Paste the output.** Never claim "green" or "done" without it. A red suite is
+- Keep every command and result visible in the tool transcript. Report the command,
+  status, and test count; attach raw output only when the transcript is unavailable
+  or truncated. Never claim "green" or "done" without this evidence. A red suite is
   work, not an obstacle — do not skip or comment out failing tests.
 
 ### 2. Commit
@@ -192,4 +199,4 @@ Delete the merged branch.
   [Scope change mid-feature](#scope-change-mid-feature) — it never just joins the
   open branch.
 - Never auto-merge — hand back for review/PR.
-- Never claim checks passed without pasted output.
+- Never claim checks passed without visible runner evidence.

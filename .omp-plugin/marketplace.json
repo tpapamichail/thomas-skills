@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "tpapamichail",
-  "description": "Thomas Papamichail's portable test-first GitHub workflow and agent-routing plugins.",
+  "description": "Thomas Papamichail's portable workflow and agent-routing plugins for Oh My Pi.",
   "owner": {
     "name": "Thomas Papamichail",
     "url": "https://github.com/tpapamichail"
@@ -16,8 +16,8 @@
     },
     {
       "name": "agent-routing",
-      "description": "Canonical Claude Code subagents with agent-first, model-second routing and explicit model effort.",
-      "source": "./adapters/claude",
+      "description": "Canonical specialist agents with agent-first, model-second routing.",
+      "source": "./adapters/omp",
       "version": "1.1.0",
       "category": "workflow"
     }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
-  "name": "thomas-skills",
+  "name": "agent-routing",
   "version": "1.1.0",
-  "description": "Portable test-first GitHub workflow with agent-first, model-second routing, explicit model tiers, and specialist delegation across coding harnesses.",
+  "description": "Canonical Claude Code subagents with explicit model and effort tiers.",
   "author": {
     "name": "Thomas Papamichail",
     "url": "https://github.com/tpapamichail"
@@ -10,5 +10,5 @@
   "homepage": "https://github.com/tpapamichail/thomas-skills",
   "repository": "https://github.com/tpapamichail/thomas-skills",
   "license": "MIT",
-  "keywords": ["tdd", "testing", "git-flow", "github", "issues", "projects", "workflow", "agents", "routing"]
+  "keywords": ["agents", "routing", "models", "claude-code"]
 }

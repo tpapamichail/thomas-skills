@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Red-green-refactor is mandatory for this user. Load BEFORE writing or modifying any production code, in any language — no implementation line is written until a test exists that fails for the right reason, and the failure is pasted as proof. Triggers on "implement", "add", "build", "fix", "refactor", a bug report, a new function/class/endpoint, or any edit to a file that has (or should have) tests. SKIP only for docs, comments, config/lockfiles, and throwaway scripts.
+description: Red-green-refactor is mandatory for this user. Load BEFORE writing or modifying any production code, in any language — no implementation line is written until a focused test fails for the right reason with visible runner evidence. Run only that test and the smallest affected scope inside each cycle; run the complete CI-equivalent gate once against the final tree. Triggers on "implement", "add", "build", "fix", "refactor", a bug report, a new function/class/endpoint, or any edit to a file that has (or should have) tests. SKIP only for docs, comments, config/lockfiles, and throwaway scripts.
 allowed-tools: Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(npx:*), Bash(make:*), Bash(composer:*), Bash(vendor/bin/*), Bash(pytest:*), Bash(python:*), Bash(uv:*), Bash(go:*), Bash(cargo:*), Bash(dotnet:*), Bash(mvn:*), Bash(gradle:*), Bash(bundle:*), Bash(rspec:*), Bash(git:*), Read, Glob, Grep, Edit, Write
 ---
 
@@ -18,38 +18,46 @@ proves only that the code does what it already does.
 
 | Phase | Goal | Done when |
 |---|---|---|
-| 🔴 **Red** | A test that expresses the *next* behaviour | It fails, and the failure message is the one you predicted |
-| 🟢 **Green** | Make it pass | The suite is green, by the least code that could work |
-| 🔵 **Refactor** | Remove the mess you just made | The suite is still green, with no new behaviour |
+| 🔴 **Red** | A test that expresses the *next* behaviour | The focused test fails, and the failure message is the one you predicted |
+| 🟢 **Green** | Make it pass | The focused test and the smallest affected scope pass, with the smallest complete change |
+| 🔵 **Refactor** | Remove the mess you just made | The affected scope is still green, with no new behaviour |
 
-One behaviour per cycle. If the test you are about to write needs three
-things to be true, it is three cycles.
+One observable contract per cycle. Multiple assertions or table-driven cases belong
+together when they describe the same outcome or invariant. Split them only when they
+can fail or ship independently.
 
 ---
 
-## Resolve the test command first
+## Resolve the test scopes first
 
-Never hardcode the runner or guess an invocation. Detect it once per session, in
-this order of precedence:
+Never hardcode the runner or guess an invocation. Resolve three scopes once per
+session:
 
-| Source | Look for |
-|---|---|
-| `.github/workflows/*.yml` | authoritative — this is what CI actually runs |
-| `package.json` | `scripts`: `test`, `test:unit`, `test:watch` |
-| `Makefile` | `test`, `check` |
-| `composer.json` | `scripts.test`; else `vendor/bin/phpunit` |
-| `pyproject.toml` / `pytest.ini` / `tox.ini` | `pytest`, `uv run pytest` |
-| `Cargo.toml`, `go.mod`, `*.csproj`, `Gemfile` | `cargo test`, `go test ./...`, `dotnet test`, `bundle exec rspec` |
+| Scope | Used for | Resolve from |
+|---|---|---|
+| **Focused** | Red and the first Green check | The runner's exact test/name filter and the project's existing test layout |
+| **Affected** | Green and Refactor | The closest test file, module, package, and known contract or caller tests |
+| **Final** | Task completion only | CI workflows first, then the repository's full test/check scripts |
 
-Then find how the project already writes tests before adding one — mirror its
-layout, naming, and assertion style:
+Start with the focused test and expand only as far as the change demands. In a
+monorepo, stay inside the affected package unless the changed contract crosses a
+package boundary. Shared APIs, global state, bootstrap/DI, schemas, migrations,
+serialization, concurrency, transactions, and security boundaries usually demand a
+broader affected scope. When impact is uncertain, expand the affected scope rather
+than guessing.
+
+The focused result counts toward the affected scope. Run only the additional tests
+needed to complete that scope; do not repeat the focused test unless the runner's
+smallest affected invocation necessarily includes it.
+
+Find how the project already writes tests before adding one — mirror its layout,
+naming, and assertion style:
 
 ```
 tests/  test/  spec/  __tests__/  *_test.go  *.test.ts  *.spec.ts  test_*.py
 ```
 
-Learn the single-test invocation too, not just the whole suite — you will run one
-test dozens of times per cycle:
+Learn the focused invocation; this is the command used repeatedly inside the cycle:
 
 ```bash
 npx vitest run path/to/file.test.ts -t "name"
@@ -57,6 +65,10 @@ pytest tests/test_file.py::test_name -x
 go test ./pkg -run TestName
 vendor/bin/phpunit --filter testName
 ```
+
+Resolve the final gate separately from `.github/workflows/*.yml`, `package.json`,
+`Makefile`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `*.csproj`, or
+`Gemfile`. CI is authoritative for completion, not for the tight feedback loop.
 
 **No test harness at all?** Stop and say so. Setting one up is a decision for the
 user, not a step to take silently — and it changes the shape of the task.
@@ -75,8 +87,8 @@ describe it back — that is how a test ends up asserting the bug.
 For a **bug fix**, the red test *is* the reproduction. Reproduce first:
 
 1. Write a test that fails **because the bug exists**.
-2. Paste that failure. It is the proof the bug is real and that you found the right
-   cause — not a guess at it.
+2. Run it and verify that the visible failure is the one you predicted. That is the
+   proof the bug is real and that you found the right cause — not a guess at it.
 3. Only then fix.
 
 For **legacy code with no coverage** that you must change: pin the current behaviour
@@ -89,7 +101,10 @@ Then start the red cycle for the new behaviour.
 {single-test command}
 ```
 
-**Paste the failure output.** Then check it against what you predicted:
+**Read the visible failure output.** Record the command, test, and predicted versus
+actual failure. Do not duplicate a full log in prose when it is already visible in
+the tool transcript; attach it when the transcript is unavailable, truncated, or
+the failure is unexpected.
 
 | Failure | Meaning |
 |---|---|
@@ -108,17 +123,23 @@ Diagnose it — never "fix" it by moving on.
 
 ## 🟢 Green
 
-Write the **least** code that turns the test green. Not the code you know you will
-need — the code this test demands.
+Write the **smallest complete** code that turns the focused test green. Not the code
+you may need later — the code the current contract demands.
 
-- Hardcoding a return value is a legitimate first green. The next red test is what
-  forces the generalisation.
+- Prefer the obvious complete implementation over a disposable hardcode when they
+  are equally small. Hardcode only as a deliberate triangulation step when another
+  required case will immediately force the generalisation.
 - No extra parameters, branches, config, or abstraction "while I'm here". If no test
   fails without it, it does not get written.
 - Do not touch unrelated files.
 
-Then run the **whole suite**, not just the new test — green here means nothing else
-broke — and paste the output.
+Run the focused test first. Once it passes, run only the additional tests needed to
+complete the smallest affected scope that can catch regressions from the change.
+Stop there: do not run the final repository gate inside a normal
+Red–Green–Refactor cycle.
+
+Keep the runner result visible and report the command and pass count; do not paste
+the same full output again unless it would otherwise be unavailable.
 
 Never make a test pass by weakening it: no deleting assertions, no loosening a
 comparison, no `skip`/`xfail`/`.only`, no widening a mock to swallow the call. If
@@ -128,13 +149,24 @@ the test is wrong, say why and rewrite it deliberately.
 
 ## 🔵 Refactor
 
-Only with a green suite. Structure changes, behaviour does not.
+Only with the focused test and affected scope green. Structure changes, behaviour
+does not.
 
-Remove the duplication the green step introduced, name what appeared, collapse what
-was a hardcode. Re-run the suite after each step — a refactor that needs a test
-changed is not a refactor, it is a behaviour change, and it needs its own red first.
+Batch closely related structure-only edits that cannot usefully be validated
+separately. Re-run the affected scope after each logical batch, not after every edit.
+A refactor that needs a test changed is not a refactor; it is a behaviour change and
+needs its own Red first.
 
 Then start the next cycle.
+
+---
+
+## Final gate
+
+After the last behaviour cycle, run the repository's complete CI-equivalent test and
+check gate once against the final tree. If `gh-flow` or `gh-issue` owns task
+completion, defer to its Finish/Done gate instead of duplicating the run. Any
+production-code change after that evidence invalidates it; run the final gate again.
 
 ---
 
@@ -158,8 +190,9 @@ and genuine one-off scripts. Everything else is production code.
 ## Rules
 
 - No production code before a failing test.
-- Never claim red or green without pasted runner output.
+- Never claim Red or Green without visible runner evidence.
 - A test that passes on its first run is a defect in the test — diagnose it, never skip past it.
-- One behaviour per cycle; the whole suite green before the next one.
-- Never weaken, skip, or delete a test to get to green.
+- One observable contract per cycle; the focused test and affected scope are green before the next one.
+- Run the complete CI-equivalent gate once against the final tree, not inside each cycle.
+- Never weaken, skip, or delete a test to get to Green.
 - Never write code no failing test demands.
