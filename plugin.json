@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "thomas-skills",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Portable test-first GitHub workflow and agent-routing skills for coding harnesses.",
   "author": {
     "name": "Thomas Papamichail",
