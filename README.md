@@ -119,7 +119,7 @@ Plus two that cut across all of them:
 Every task gets its own feature branch off the integration branch; nothing is ever
 committed straight to `develop`/`main`. Detects the repo's git flow config, branch
 prefix, and check commands rather than assuming them — works in a `git flow` repo and
-in a plain-git one. `finish` refuses to claim green without pasted test output, and
+in a plain-git one. `finish` refuses to claim green without visible runner evidence,
 never auto-merges.
 
 ### gh-issue
@@ -141,10 +141,12 @@ Needs the `project` token scope — `gh auth refresh -s project`.
 
 Red-green-refactor, enforced rather than described. No production line before a test
 that fails *for the predicted reason*; a test that passes on its first run is treated
-as a defect in the test, not a lucky break. Bug fixes start from a reproduction test,
-legacy code gets a characterization test before it is touched, and neither red nor
-green may be claimed without pasted runner output. Detects the project's runner and
-its single-test invocation from CI config first — never `npm test` on faith.
+as a defect in the test, not a lucky break. Each cycle runs the focused test and the
+smallest affected scope, while the complete CI-equivalent gate runs once against the
+final tree. Bug fixes start from a reproduction test, legacy code gets a
+characterization test before it is touched, and neither Red nor Green may be claimed
+without visible runner evidence. Detects focused invocations separately from the
+final CI gate — never `npm test` on faith or on every micro-cycle.
 
 Its `description` is written to load in every session, so the rule is present before
 the first line of code, not recalled after it.
@@ -193,9 +195,11 @@ moment you install. Edit `session-rules.md` to change the wording.
 ```markdown
 ## Workflow
 
-Work test-first, always: red → green → refactor. Load the `tdd` skill before writing
+Work test-first, always: Red → Green → Refactor. Load the `tdd` skill before writing
 or changing any production code. No implementation before a test that fails for the
-right reason, and no "it passes" without pasted test output.
+right reason. Run the focused test and smallest affected scope during each cycle,
+then the complete CI-equivalent gate once against the final tree; never claim Red or
+Green without visible runner evidence.
 ```
 
 Neither installer writes to your `CLAUDE.md` on its own — that boundary is
@@ -247,7 +251,7 @@ Skills and adapters here follow four rules, which is most of why they're reusabl
 
 1. **Detect, never hardcode.** Repo name, base branch, branch prefix, test commands,
    board columns — all resolved at runtime.
-2. **Evidence over assertion.** No "done" or "green" without pasted output.
+2. **Evidence over assertion.** No "done" or "green" without visible runner evidence.
 3. **Ask before anything irreversible.** No auto-merge, no push to a shared branch,
    no bulk board edits.
 4. **Agent before model.** Match purpose and capabilities first; then spend only

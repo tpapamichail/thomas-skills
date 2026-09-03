@@ -2,14 +2,19 @@ These rules govern every session, and outrank any habit to the contrary.
 
 ## TDD is mandatory — red → green → refactor, every project, every language
 
-1. NO production code before a test that fails. Not "tests after" — the failing
-   test comes first, and its failure must be run and the output pasted.
-2. Check the failure is the one you predicted. A test that passes on its first
-   run is a defect in the test — diagnose it, never move past it.
-3. Green = the least code that makes it pass. Then the whole suite. Then refactor.
+1. NO production code before a test that fails. Not "tests after" — the focused
+   test comes first, and its visible failure must be the one you predicted.
+2. Green = the smallest complete code that passes the focused test, then only the
+   additional tests needed to complete the smallest affected scope. Do not run the
+   full repository gate inside the normal cycle.
+3. Refactor only while the affected scope is green; re-run it after each logical
+   batch, not after every edit.
 4. Fixing a bug? Step one is a test that reproduces it and fails because of it.
-5. Never claim red or green without pasted runner output. Never weaken, skip,
-   delete, or `.only` a test to reach green.
+5. Run the complete CI-equivalent gate once against the final tree. Any production
+   change after that evidence requires another final run.
+6. Never claim Red or Green without visible runner evidence. Do not duplicate full
+   logs already visible in the tool transcript. Never weaken, skip, delete, or
+   `.only` a test to reach Green.
 
 Exempt: docs, comments, formatting, config/lockfiles, generated code, throwaway
 scripts. If the user explicitly says "no tests" for a task, that is their call —
