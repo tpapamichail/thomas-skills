@@ -259,18 +259,32 @@ Skills and adapters here follow four rules, which is most of why they're reusabl
 
 ## Releasing
 
-The Claude and omp marketplace catalogs live in [`.claude-plugin/`](.claude-plugin)
-and [`.omp-plugin/`](.omp-plugin). Before release:
+Marketplace installs from `tpapamichail/thomas-skills` clone GitHub's default
+branch (`main`). A tag on `develop` is not enough: the release must reach `main`
+before either plugin can be installed at its new version.
+
+After bumping the version in the root plugin manifest, both marketplace entries,
+both adapter plugin manifests, and `package.json`, run:
 
 ```bash
 npm test
 npm run check:generated
 claude plugin validate . --strict
-claude plugin tag . --dry-run          # then drop --dry-run, add --push
+claude plugin validate adapters/claude --strict
+
+VERSION=$(node -p "require('./package.json').version")
+git flow release start "$VERSION"
+git flow release finish -n "$VERSION"
+git push origin main develop
+
+git switch main
+claude plugin tag . --dry-run
+claude plugin tag . --push
+git switch develop
 ```
 
-Bump the version in the root plugin manifest, both marketplace entries, both
-adapter plugin manifests, and `package.json`.
+`git flow release finish -n` deliberately leaves tagging to `claude plugin tag`,
+which uses the plugin name and version to create the marketplace release tag.
 
 `hooks/session-rules.md` (Claude Code) and `rules/session-rules.md` (omp) carry the
 same TDD, git-flow, and agent-routing sections — edit one, edit the other.
