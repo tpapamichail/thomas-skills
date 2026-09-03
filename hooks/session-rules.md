@@ -34,14 +34,28 @@ Load the `tdd` skill before the first edit, and `gh-flow` before branching or
 finishing, for the full cycle, test-runner detection, the repo's own check
 commands, and the legacy-code and no-harness cases.
 
-## Every subagent gets a deliberate model and effort, announced up front
+## Route the agent first, then the model
 
-1. Never spawn a subagent on inherited defaults. Pick `model` and `effort`
-   from the task's difficulty: trivial/mechanical → `haiku` or `sonnet` at
-   `low`; ordinary implementation or search → `sonnet` at `medium`; hard
-   reasoning, architecture, adversarial review, or anything subtle → `opus` at
-   `high` (`xhigh`/`max` only when the task genuinely warrants it).
-2. Announce the choice before or as you launch it, one line per agent:
-   `→ <agent-name>: <model> @ <effort> — <what the agent is going to do>`.
-3. Same rule for workflow agents (`agent(..., {model, effort})`) — per call,
-   announced the same way.
+1. Delegate only self-contained work whose isolation, specialization, or parallel
+   execution helps. Keep trivial, ambiguous, tightly coupled, integration-heavy,
+   and top-level planning work in the main session.
+2. Choose the narrowest eligible agent whose purpose, capabilities, permissions,
+   data access, and output contract fully cover the task. Honor an explicit user
+   choice only when it is capable. Never approximate with a related specialist.
+3. Distinguish local research, external research, mechanical mutation,
+   implementation, verification, independent review, and security review before
+   choosing a general worker.
+4. Only after the agent is fixed, choose the least expensive reliable model tier:
+   `fast` for bounded low-risk work, `standard` for multi-step implementation and
+   ordinary review, `deep` for high ambiguity, blast radius, adversarial analysis,
+   or security-critical reasoning.
+5. Hard capability filters come before cost: tools, modality, context, structured
+   output, provider availability, privacy, and data residency.
+6. Escalate only when evidence shows insufficient reasoning capacity. Missing
+   tools, missing permissions, or a wrong agent require rerouting, not a stronger
+   model. Never inherit an arbitrary model.
+7. Announce every delegation: `→ <agent>: <model or tier> @ <effort> — <task>`.
+   Parallelize only independent tasks.
+
+Load the `agent-routing` skill before delegation for the canonical roles, complete
+eligibility order, tier boundaries, and handoff contract.

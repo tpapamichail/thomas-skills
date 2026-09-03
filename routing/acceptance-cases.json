@@ -1,0 +1,72 @@
+{
+  "$schema": "./acceptance-cases.schema.json",
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "name": "local discovery",
+      "prompt": "Find where authentication is configured in this workspace.",
+      "classification": { "delegate": true, "activity": "research", "source": "local", "risk": "low" },
+      "expected": { "agent": "local-researcher", "tier": "fast" }
+    },
+    {
+      "name": "external primary sources",
+      "prompt": "Verify the current retry contract from the dependency's official documentation.",
+      "classification": { "delegate": true, "activity": "research", "source": "external", "risk": "low" },
+      "expected": { "agent": "external-researcher", "tier": "fast" }
+    },
+    {
+      "name": "mechanical mutation",
+      "prompt": "Rename these exact keys in every fixture without changing behavior.",
+      "classification": { "delegate": true, "activity": "mechanical", "source": "local", "risk": "low" },
+      "expected": { "agent": "mechanical-worker", "tier": "fast" }
+    },
+    {
+      "name": "bounded implementation",
+      "prompt": "Implement the approved authentication flow and its acceptance criteria.",
+      "classification": { "delegate": true, "activity": "implement", "source": "local", "risk": "normal" },
+      "expected": { "agent": "implementer", "tier": "standard" }
+    },
+    {
+      "name": "agent default tier is a floor",
+      "prompt": "Implement a small, fully specified validation change.",
+      "classification": { "delegate": true, "activity": "implement", "source": "local", "risk": "low" },
+      "expected": { "agent": "implementer", "tier": "standard" }
+    },
+    {
+      "name": "behavioral verification",
+      "prompt": "Run the documented acceptance scenario and report the observed result.",
+      "classification": { "delegate": true, "activity": "verify", "source": "local", "risk": "low" },
+      "expected": { "agent": "verifier", "tier": "fast" }
+    },
+    {
+      "name": "independent review",
+      "prompt": "Review the completed change for correctness and regressions.",
+      "classification": { "delegate": true, "activity": "review", "source": "local", "risk": "normal", "requiredCapabilities": ["vcs-read"] },
+      "expected": { "agent": "reviewer", "tier": "standard" }
+    },
+    {
+      "name": "security audit",
+      "prompt": "Audit the webhook boundary for replay and forgery attacks.",
+      "classification": { "delegate": true, "activity": "security-review", "source": "local", "risk": "high" },
+      "expected": { "agent": "security-reviewer", "tier": "deep" }
+    },
+    {
+      "name": "high-risk review escalation",
+      "prompt": "Review the irreversible migration for correctness before production rollout.",
+      "classification": { "delegate": true, "activity": "review", "source": "local", "risk": "high" },
+      "expected": { "agent": "reviewer", "tier": "deep" }
+    },
+    {
+      "name": "agent maximum tier is a ceiling",
+      "prompt": "Map a high-impact local subsystem without changing it.",
+      "classification": { "delegate": true, "activity": "research", "source": "local", "risk": "high" },
+      "expected": { "agent": "local-researcher", "tier": "standard" }
+    },
+    {
+      "name": "top-level planning stays main",
+      "prompt": "Decide the product architecture and decompose the entire program.",
+      "classification": { "delegate": false, "activity": "plan", "source": "none", "risk": "high" },
+      "expected": { "agent": "main", "tier": "deep" }
+    }
+  ]
+}
