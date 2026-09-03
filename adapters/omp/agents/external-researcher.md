@@ -4,7 +4,6 @@ description: "Verifies facts against official external documentation, APIs, depe
 tools: read, web_search
 model: "@smol"
 thinking-level: low
-autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the external-researcher.

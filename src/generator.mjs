@@ -1,7 +1,22 @@
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { renderAgent } from "./adapters.mjs";
+
+const OMP_SESSION_RULES_FRONTMATTER = [
+  "---",
+  "description: Test-first, branch, and delegation guardrails for every coding session.",
+  "alwaysApply: true",
+  "---",
+  "",
+].join("\n");
+
+function renderSessionRules(policy, harness) {
+  const body = `${policy.trimEnd()}\n`;
+  if (harness === "claude") return body;
+  if (harness === "omp") return `${OMP_SESSION_RULES_FRONTMATTER}\n${body}`;
+  throw new Error(`Unsupported session rules harness: ${harness}`);
+}
 
 async function replaceMarkdownFiles(directory, files) {
   await mkdir(directory, { recursive: true });
@@ -63,6 +78,26 @@ export async function checkAgentAdapters({ catalog, tiers, destinations, models 
     for (const name of actualNames) {
       if (!expected.has(name)) stale.push(join(directory, name));
     }
+  }
+
+  return stale.sort();
+}
+
+export async function writeSessionRules({ policy, destinations }) {
+  await Promise.all(
+    Object.entries(destinations).map(async ([harness, path]) => {
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, renderSessionRules(policy, harness), "utf8");
+    }),
+  );
+}
+
+export async function checkSessionRules({ policy, destinations }) {
+  const stale = [];
+
+  for (const [harness, path] of Object.entries(destinations)) {
+    const actual = await readFile(path, "utf8").catch(() => undefined);
+    if (actual !== renderSessionRules(policy, harness)) stale.push(path);
   }
 
   return stale.sort();

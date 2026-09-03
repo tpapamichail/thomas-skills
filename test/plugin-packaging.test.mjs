@@ -25,4 +25,8 @@ test("the package exposes bundled skills through the Agent Plugins standard", as
     packageJson.files.includes("plugin.json"),
     "npm/git installs must retain the portable plugin manifest",
   );
+  assert.ok(
+    packageJson.files.includes("workflow/session-rules.md"),
+    "published OMP extensions must retain the canonical workflow policy",
+  );
 });

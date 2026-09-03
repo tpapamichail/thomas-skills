@@ -75,7 +75,12 @@ function renderClaude(agent, name, tier) {
   ].join("\n");
 }
 
+function ompAutoloadSkills(agent) {
+  return agent.capabilities.includes("workspace-write") ? ["tdd", "gh-flow"] : [];
+}
+
 function renderOmp(agent, name, tier) {
+  const skills = ompAutoloadSkills(agent);
   return [
     "---",
     `name: ${name}`,
@@ -83,7 +88,7 @@ function renderOmp(agent, name, tier) {
     `tools: ${mappedTools(agent, "omp").join(", ")}`,
     `model: ${JSON.stringify(OMP_MODELS[tier])}`,
     `thinking-level: ${EFFORT[tier]}`,
-    "autoload-skills: tdd, gh-flow, agent-routing",
+    ...(skills.length > 0 ? [`autoload-skills: ${skills.join(", ")}`] : []),
     "---",
     "",
     renderPrompt(agent, tier),

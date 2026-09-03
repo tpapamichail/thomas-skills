@@ -17,7 +17,7 @@ const MAX_CONCURRENCY = 4;
 const MAX_OUTPUT_BYTES = 100 * 1024;
 
 const WORKFLOW_POLICY = readFileSync(
-  new URL("../rules/session-rules.md", import.meta.url),
+  new URL("../workflow/session-rules.md", import.meta.url),
   "utf8",
 );
 

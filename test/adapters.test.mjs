@@ -60,3 +60,22 @@ test("escalated native variants preserve the role and resolve the selected tier"
     /  bash:\n    "\*": deny\n    "git diff\*": allow\n    "git show\*": allow\n    "git log\*": allow\n    "git status\*": allow/,
   );
 });
+
+test("OMP agents autoload workflow skills only when they can change workspace state", () => {
+  for (const id of [
+    "local-researcher",
+    "external-researcher",
+    "verifier",
+    "reviewer",
+    "security-reviewer",
+  ]) {
+    const definition = renderAgent(byId(id), "omp", models);
+    assert.doesNotMatch(definition, /^autoload-skills:/m, `${id} should not load mutation skills`);
+  }
+
+  for (const id of ["mechanical-worker", "implementer"]) {
+    const definition = renderAgent(byId(id), "omp", models);
+    assert.match(definition, /^autoload-skills: tdd, gh-flow$/m);
+    assert.doesNotMatch(definition, /autoload-skills:.*agent-routing/);
+  }
+});

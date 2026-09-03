@@ -46,6 +46,10 @@ For the **feature prefix**: `gitflow.prefix.feature` if set, else `feature/`.
 > plain-git equivalents below still apply — the naming convention is what matters,
 > not the tool.
 
+Do not run `git flow init` automatically. Missing configuration selects the
+resolution fallback above; changing repository conventions requires an explicit
+user request.
+
 ---
 
 ## Start
@@ -105,19 +109,20 @@ A request that has nothing to do with the feature currently checked out does **n
 silently join it. One branch per feature is the whole point — a stray fix riding
 along makes the branch impossible to review, revert, or finish cleanly.
 
-When the new request is out of scope:
+When the new request is out of scope, ask once. Name the current feature and offer
+all material choices:
 
-1. **Ask where it goes** — on this branch, or on a new feature branch. Say which
-   feature is currently open so the user can judge.
-2. **If the answer is a new branch, ask what happens to the current one** before
-   creating anything:
-   - **Finish it now** → run [**Finish**](#finish) to the end, then [**Start**](#start)
-     the new feature off the integration branch.
-   - **Park it** → commit or stash the work in progress, then branch the new feature
-     off the integration branch, never off the current one. A feature branched off an
-     unmerged feature inherits its commits and cannot be merged independently.
-3. **If the answer is this branch**, continue on it — but keep the branch name honest;
-   rename it (`git branch -m`) if it no longer describes the work.
+1. **Keep it on the current branch** — continue there, but rename the branch
+   (`git branch -m`) if it no longer describes the combined scope.
+2. **Finish current, then start new** — run [**Finish**](#finish), then
+   [**Start**](#start) the new feature from the integration branch.
+3. **Park current, then start new** — commit or stash the work in progress, then
+   create the new feature from the integration branch, never from the current
+   feature. A feature branched from an unmerged feature inherits its commits and
+   cannot be merged independently.
+
+Ask a follow-up only when the selected option omits information required to execute
+it safely.
 
 Judging scope: same files and same intent as the open feature → in scope. A different
 subsystem, an unrelated bug, or a "while you're at it" → out of scope. When it is a
@@ -169,8 +174,11 @@ links the commit to the issue.
 
 ### 3. Merge or PR
 
-**Ask the user first** whether they want a PR or a direct merge — never auto-merge,
-never push to the integration branch unprompted.
+If the user already explicitly requested the exact operation in the current task
+(for example, open a PR, push the feature branch, or merge directly), that request
+is authorization; do not ask again. Otherwise ask once whether they want a PR or a
+direct merge. Authorization applies only to the named operation and target — never
+auto-merge or push the integration branch implicitly.
 
 ```bash
 git flow feature finish {ID}-{slug}     # direct merge (or: git merge --no-ff)
@@ -193,10 +201,11 @@ Delete the merged branch.
 
 ## Rules
 
-- Never commit, push, or merge into the integration or production branch without an
-  explicit user instruction.
-- One branch per feature/issue. An out-of-scope request pauses for a decision — see
-  [Scope change mid-feature](#scope-change-mid-feature) — it never just joins the
-  open branch.
-- Never auto-merge — hand back for review/PR.
+- Never commit, push, or merge into the integration or production branch without
+  explicit authorization for that operation and target.
+- One branch per feature or issue. For an out-of-scope request, ask once with the
+  current, finish-then-new, and park-then-new options; never branch from unmerged
+  feature work.
+- Reuse an existing task-matching feature branch; create one only when absent.
+- Never initialize git-flow or auto-merge without explicit authorization.
 - Never claim checks passed without visible runner evidence.

@@ -4,7 +4,6 @@ description: "Escalated standard variant of local-researcher. Use only after rou
 tools: read, grep, glob
 model: "@task"
 thinking-level: medium
-autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the local-researcher.

@@ -4,7 +4,12 @@ import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { checkAgentAdapters, writeAgentAdapters } from "../src/generator.mjs";
+import {
+  checkAgentAdapters,
+  checkSessionRules,
+  writeAgentAdapters,
+  writeSessionRules,
+} from "../src/generator.mjs";
 import { resolveModels, validateCatalog } from "../src/routing.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -35,17 +40,37 @@ if (only === "opencode") {
   };
 }
 
+const sessionRules = only
+  ? undefined
+  : {
+      policy: await readFile(join(root, "workflow", "session-rules.md"), "utf8"),
+      destinations: {
+        claude: join(root, "hooks", "session-rules.md"),
+        omp: join(root, "rules", "session-rules.md"),
+      },
+    };
+
 if (check) {
-  const stale = await checkAgentAdapters({ catalog, tiers, destinations, models });
+  const stale = [
+    ...(await checkAgentAdapters({ catalog, tiers, destinations, models })),
+    ...(sessionRules ? await checkSessionRules(sessionRules) : []),
+  ];
   if (stale.length > 0) {
-    console.error(`Generated agent definitions are stale:\n${stale.join("\n")}`);
+    console.error(`Generated artifacts are stale:\n${stale.join("\n")}`);
     process.exitCode = 1;
   } else {
-    console.log(`Generated agent definitions are current (${catalog.agents.length} canonical roles).`);
+    console.log(
+      `Generated artifacts are current (${catalog.agents.length} canonical roles and session rules).`,
+    );
   }
 } else {
-  await writeAgentAdapters({ catalog, tiers, destinations, models });
+  await Promise.all([
+    writeAgentAdapters({ catalog, tiers, destinations, models }),
+    ...(sessionRules ? [writeSessionRules(sessionRules)] : []),
+  ]);
   console.log(
-    `Generated all routable ${Object.keys(destinations).join(" and ")} role-tier definitions.`,
+    `Generated all routable ${Object.keys(destinations).join(" and ")} role-tier definitions${
+      sessionRules ? " and runtime session rules" : ""
+    }.`,
   );
 }
