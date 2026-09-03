@@ -4,7 +4,7 @@ description: "Escalated deep variant of implementer. Use only after routing sele
 tools: read, grep, glob, web_search, edit, write, bash
 model: "@slow"
 thinking-level: high
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the implementer.

@@ -40,19 +40,17 @@ effort respectively.
 ```
 
 Restart OMP after the first install because `thomas-skills` includes an extension
-module. For an existing installation, refresh the catalog and upgrade the plugin:
+module. The extension injects the standing workflow policy (TDD, git-flow, and
+agent/model routing) before each OMP agent start. Generated OMP agents also
+autoload `tdd`, `gh-flow`, and `agent-routing` so delegated sessions inherit the
+same workflow skills. For an existing installation, refresh the catalog and
+upgrade the plugin:
 
 ```text
 /marketplace update tpapamichail
 /marketplace upgrade --scope user thomas-skills@tpapamichail
 /reload-plugins
 ```
-
-omp reads the native [`.omp-plugin/marketplace.json`](.omp-plugin/marketplace.json).
-The workflow plugin injects the standing routing policy but leaves omp's built-in
-`task` tool intact. The agent plugin uses omp's `@smol`, `@task`, and `@slow`
-model roles, so changing those role mappings changes every routed worker without
-editing an agent definition.
 
 Skills are invoked as `/skill:gh-flow` rather than `/gh-flow`.
 
@@ -191,12 +189,17 @@ Installing the skill makes the rule *available*. Making it **standing** — pres
 before the first line of code in every session, not recalled after it — takes one of
 two things.
 
-**Via the plugin (automatic).** The plugin ships a `SessionStart` hook
-([`hooks/hooks.json`](hooks/hooks.json)) that prints
-[`hooks/session-rules.md`](hooks/session-rules.md) into context on `startup`, `resume`,
-`clear` and `compact` — and a `SubagentStart` hook, so delegated work inherits the
-rules instead of quietly skipping them. Nothing to configure; it fires from the
-moment you install. Edit `session-rules.md` to change the wording.
+**Via Oh My Pi (automatic).** The OMP package extension injects the standing
+workflow policy before each agent start. OMP's generated agents autoload the
+`tdd`, `gh-flow`, and `agent-routing` skills because OMP has no exact
+`SubagentStart` hook equivalent.
+
+**Via Claude Code (automatic).** The plugin ships `SessionStart` and
+`SubagentStart` hooks ([`hooks/hooks.json`](hooks/hooks.json)) that print
+[`hooks/session-rules.md`](hooks/session-rules.md) into context on `startup`,
+`resume`, `clear` and `compact`, and into every delegated session. Nothing to
+configure; they fire from the moment you install. Edit `session-rules.md` to
+change the wording.
 
 **Via `CLAUDE.md` (manual).** The `skills` CLI route has no hooks, so add this to
 `~/.claude/CLAUDE.md` (user-level, every project) or to a project's `CLAUDE.md`:

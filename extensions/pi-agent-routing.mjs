@@ -16,13 +16,10 @@ const MAX_PARALLEL_TASKS = 8;
 const MAX_CONCURRENCY = 4;
 const MAX_OUTPUT_BYTES = 100 * 1024;
 
-const ROUTING_POLICY = `## Agent and model routing
-
-Select the agent before the model. Delegate only self-contained work whose isolation, specialization, or parallel execution helps. Keep ambiguous, tightly coupled, integration-heavy, trivial, and top-level planning work in the main session.
-
-Choose the narrowest eligible agent whose purpose, capabilities, permissions, and output contract fully cover the task. Apply hard tool, modality, permission, data-access, and local-versus-external filters before model cost. Never use an approximately related specialist.
-
-After the agent is fixed, use the lowest configured tier that can reliably satisfy the task: fast for bounded low-risk work, standard for multi-step implementation and ordinary review, deep for high ambiguity, blast radius, adversarial analysis, or security-critical reasoning. Missing tools or permissions require rerouting, not a stronger model. Announce each delegation as \`→ <agent>: <model or tier> @ <effort> — <task>\`. Parallelize only independent tasks.`;
+const WORKFLOW_POLICY = readFileSync(
+  new URL("../rules/session-rules.md", import.meta.url),
+  "utf8",
+);
 
 function invocation(args) {
   const currentScript = process.argv[1];
@@ -135,7 +132,7 @@ async function mapWithConcurrency(items, limit, fn) {
     while (next < items.length) {
       const index = next;
       next += 1;
-      results[index] = await fn(items[index], index);
+      results[index] = await fn(items[index]);
     }
   });
   await Promise.all(workers);
@@ -143,11 +140,9 @@ async function mapWithConcurrency(items, limit, fn) {
 }
 
 export default function agentRoutingExtension(pi) {
-  pi.on("before_agent_start", async (event) => {
-    const activeTools = event.systemPromptOptions?.selectedTools ?? [];
-    if (!activeTools.includes("route_task") && !activeTools.includes("task")) return undefined;
-    return { systemPrompt: `${event.systemPrompt}\n\n${ROUTING_POLICY}` };
-  });
+  pi.on("before_agent_start", async (event) => ({
+    systemPrompt: `${event.systemPrompt}\n\n${WORKFLOW_POLICY}`,
+  }));
 
   let toolRegistered = false;
   pi.on("session_start", async () => {
@@ -224,4 +219,5 @@ export default function agentRoutingExtension(pi) {
       },
     });
   });
+
 }

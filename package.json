@@ -13,7 +13,8 @@
     "skills",
     "src/pi-config.mjs",
     "src/pi-routing.mjs",
-    "src/routing.mjs"
+    "src/routing.mjs",
+    "rules/session-rules.md"
   ],
   "engines": {
     "node": ">=22"

@@ -4,7 +4,7 @@ description: "Performs exact, deterministic, reversible operations whose transfo
 tools: read, grep, glob, edit, write, bash
 model: "@smol"
 thinking-level: low
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the mechanical-worker.

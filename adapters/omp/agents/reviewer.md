@@ -4,7 +4,7 @@ description: "Independently inspects a completed artifact or change for correctn
 tools: read, grep, glob, bash
 model: "@task"
 thinking-level: medium
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the reviewer.

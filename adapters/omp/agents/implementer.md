@@ -4,7 +4,7 @@ description: "Executes a bounded implementation or investigation that requires j
 tools: read, grep, glob, web_search, edit, write, bash
 model: "@task"
 thinking-level: medium
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the implementer.

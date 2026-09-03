@@ -4,7 +4,7 @@ description: "Performs adversarial security, privacy, trust-boundary, and abuse 
 tools: read, grep, glob, bash, web_search
 model: "@slow"
 thinking-level: high
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the security-reviewer.

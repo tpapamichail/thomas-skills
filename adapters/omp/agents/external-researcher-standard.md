@@ -4,7 +4,7 @@ description: "Escalated standard variant of external-researcher. Use only after 
 tools: read, web_search
 model: "@task"
 thinking-level: medium
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the external-researcher.

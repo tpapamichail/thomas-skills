@@ -83,7 +83,7 @@ function renderOmp(agent, name, tier) {
     `tools: ${mappedTools(agent, "omp").join(", ")}`,
     `model: ${JSON.stringify(OMP_MODELS[tier])}`,
     `thinking-level: ${EFFORT[tier]}`,
-    "blocking: false",
+    "autoload-skills: tdd, gh-flow, agent-routing",
     "---",
     "",
     renderPrompt(agent, tier),

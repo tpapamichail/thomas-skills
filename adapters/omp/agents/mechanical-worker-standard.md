@@ -4,7 +4,7 @@ description: "Escalated standard variant of mechanical-worker. Use only after ro
 tools: read, grep, glob, edit, write, bash
 model: "@task"
 thinking-level: medium
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the mechanical-worker.

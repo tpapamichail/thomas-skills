@@ -4,7 +4,7 @@ description: "Searches and maps information already present in the local workspa
 tools: read, grep, glob
 model: "@smol"
 thinking-level: low
-blocking: false
+autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the local-researcher.

@@ -36,7 +36,7 @@ test("Pi registers route_task, while OMP keeps its native task tool", async () =
     systemPrompt: "base",
     systemPromptOptions: { selectedTools: ["route_task"] },
   });
-  assert.match(piPrompt.systemPrompt, /Select the agent before the model/);
+  assert.match(piPrompt.systemPrompt, /Route the agent first, then the model/);
 
   const omp = fakePi([{ name: "task" }]);
   assert.doesNotThrow(() => agentRoutingExtension(omp));
@@ -46,5 +46,26 @@ test("Pi registers route_task, while OMP keeps its native task tool", async () =
     systemPrompt: "base",
     systemPromptOptions: { selectedTools: ["task"] },
   });
-  assert.match(ompPrompt.systemPrompt, /Select the agent before the model/);
+  assert.match(ompPrompt.systemPrompt, /Route the agent first, then the model/);
+});
+
+test("OMP injects standing workflow rules even without a task tool", async () => {
+  const omp = fakePi();
+  agentRoutingExtension(omp);
+
+  const prompt = await omp.handlers.get("before_agent_start")({
+    systemPrompt: "base",
+    systemPromptOptions: { selectedTools: [] },
+  });
+
+  assert.match(prompt.systemPrompt, /TDD is mandatory/);
+  assert.match(prompt.systemPrompt, /Git flow is mandatory/);
+  assert.match(prompt.systemPrompt, /Route the agent first, then the model/);
+});
+
+test("OMP generated agents request workflow skills for subagent sessions", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const reviewer = await readFile(new URL("../adapters/omp/agents/reviewer.md", import.meta.url), "utf8");
+
+  assert.match(reviewer, /^autoload-skills: tdd, gh-flow, agent-routing$/m);
 });
