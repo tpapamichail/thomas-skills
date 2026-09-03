@@ -78,7 +78,7 @@ primary agent's model. Re-run the command after changing the canonical catalog.
 Pi has no built-in subagent runtime, so this repository is also a Pi package:
 
 ```bash
-pi install git:github.com/tpapamichail/thomas-skills@v1.1.2
+pi install git:github.com/tpapamichail/thomas-skills@v1.1.3
 ```
 
 Configure all three model tiers globally in
