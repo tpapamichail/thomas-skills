@@ -4,7 +4,6 @@ description: "Escalated deep variant of reviewer. Use only after routing selecte
 tools: read, grep, glob, bash
 model: "@slow"
 thinking-level: high
-autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the reviewer.

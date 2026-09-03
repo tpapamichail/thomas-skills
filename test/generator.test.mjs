@@ -4,7 +4,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-import { checkAgentAdapters, writeAgentAdapters } from "../src/generator.mjs";
+import {
+  checkAgentAdapters,
+  checkSessionRules,
+  writeAgentAdapters,
+  writeSessionRules,
+} from "../src/generator.mjs";
 
 const catalog = JSON.parse(
   await readFile(new URL("../routing/agents.json", import.meta.url), "utf8"),
@@ -70,4 +75,34 @@ test("adapter checks report stale or modified generated files", async (t) => {
   assert.deepEqual(await checkAgentAdapters({ catalog, tiers, destinations, models }), [
     join(destinations.omp, "reviewer.md"),
   ]);
+});
+
+test("session rule generation wraps one canonical policy for each runtime", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "workflow-rules-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const destinations = {
+    claude: join(root, "hooks", "session-rules.md"),
+    omp: join(root, "rules", "session-rules.md"),
+  };
+  const policy = "Standing workflow policy.\n";
+
+  await writeSessionRules({ policy, destinations });
+
+  assert.equal(await readFile(destinations.claude, "utf8"), policy);
+  assert.equal(
+    await readFile(destinations.omp, "utf8"),
+    [
+      "---",
+      "description: Test-first, branch, and delegation guardrails for every coding session.",
+      "alwaysApply: true",
+      "---",
+      "",
+      policy,
+    ].join("\n"),
+  );
+  assert.deepEqual(await checkSessionRules({ policy, destinations }), []);
+
+  await writeFile(destinations.claude, "stale", "utf8");
+  assert.deepEqual(await checkSessionRules({ policy, destinations }), [destinations.claude]);
 });

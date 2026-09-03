@@ -40,11 +40,11 @@ effort respectively.
 ```
 
 Restart OMP after the first install because `thomas-skills` includes an extension
-module. The extension injects the standing workflow policy (TDD, git-flow, and
-agent/model routing) before each OMP agent start. Generated OMP agents also
-autoload `tdd`, `gh-flow`, and `agent-routing` so delegated sessions inherit the
-same workflow skills. For an existing installation, refresh the catalog and
-upgrade the plugin:
+module. The extension injects the compact standing workflow guardrails before each
+OMP agent start. Generated write-capable OMP agents autoload `tdd` and `gh-flow`;
+read-only and execute-only agents do not load mutation skills, and delegated agents
+without a delegation tool do not load `agent-routing`. For an existing installation,
+refresh the catalog and upgrade the plugin:
 
 ```text
 /marketplace update tpapamichail
@@ -183,39 +183,32 @@ overrides still execute the selected tier.
 OpenCode and Pi require explicit provider model mappings and fail closed when one
 is missing.
 
-## Always-on TDD
+## Always-on workflow guardrails
 
-Installing the skill makes the rule *available*. Making it **standing** — present
-before the first line of code in every session, not recalled after it — takes one of
-two things.
+Installing a skill makes its detailed procedure available. The compact standing
+guardrails ensure the right skill is loaded before a behavior change, repository
+mutation, or delegation without repeating the full procedures in every prompt.
 
-**Via Oh My Pi (automatic).** The OMP package extension injects the standing
-workflow policy before each agent start. OMP's generated agents autoload the
-`tdd`, `gh-flow`, and `agent-routing` skills because OMP has no exact
-`SubagentStart` hook equivalent.
+[`workflow/session-rules.md`](workflow/session-rules.md) is the canonical policy
+body.
+
+**Via Oh My Pi (automatic).** The OMP package extension injects the canonical
+guardrails before each agent start. Generated write-capable agents autoload `tdd`
+and `gh-flow`; read-only and execute-only roles skip mutation skills.
 
 **Via Claude Code (automatic).** The plugin ships `SessionStart` and
-`SubagentStart` hooks ([`hooks/hooks.json`](hooks/hooks.json)) that print
-[`hooks/session-rules.md`](hooks/session-rules.md) into context on `startup`,
-`resume`, `clear` and `compact`, and into every delegated session. Nothing to
-configure; they fire from the moment you install. Edit `session-rules.md` to
-change the wording.
+`SubagentStart` hooks ([`hooks/hooks.json`](hooks/hooks.json)) that inject the
+generated [`hooks/session-rules.md`](hooks/session-rules.md) on `startup`, `resume`,
+`clear`, and `compact`, and into every delegated session.
 
-**Via `CLAUDE.md` (manual).** The `skills` CLI route has no hooks, so add this to
-`~/.claude/CLAUDE.md` (user-level, every project) or to a project's `CLAUDE.md`:
+To change the policy, edit only the canonical file and run `npm run generate`.
+Never edit either runtime copy directly.
 
-```markdown
-## Workflow
+**Via `CLAUDE.md` (manual).** The `skills` CLI route has no hooks. Copy the contents
+of [`workflow/session-rules.md`](workflow/session-rules.md) into
+`~/.claude/CLAUDE.md` for every project, or into a project's `CLAUDE.md`.
 
-Work test-first, always: Red → Green → Refactor. Load the `tdd` skill before writing
-or changing any production code. No implementation before a test that fails for the
-right reason. Run the focused test and smallest affected scope during each cycle,
-then the complete CI-equivalent gate once against the final tree; never claim Red or
-Green without visible runner evidence.
-```
-
-Neither installer writes to your `CLAUDE.md` on its own — that boundary is
-deliberate.
+Neither installer writes to `CLAUDE.md` on its own — that boundary is deliberate.
 
 ## Requirements
 
@@ -298,8 +291,9 @@ git switch develop
 `git flow release finish -n` deliberately leaves tagging to `claude plugin tag`,
 which uses the plugin name and version to create the marketplace release tag.
 
-`hooks/session-rules.md` (Claude Code) and `rules/session-rules.md` (omp) carry the
-same TDD, git-flow, and agent-routing sections — edit one, edit the other.
+[`workflow/session-rules.md`](workflow/session-rules.md) is canonical.
+`npm run generate` renders `hooks/session-rules.md` for Claude Code and
+`rules/session-rules.md` for OMP; `npm run check:generated` rejects drift.
 
 ## License
 

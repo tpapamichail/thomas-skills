@@ -4,7 +4,6 @@ description: "Escalated standard variant of verifier. Use only after routing sel
 tools: read, grep, glob, bash
 model: "@task"
 thinking-level: medium
-autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the verifier.

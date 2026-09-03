@@ -1,18 +1,21 @@
 ---
 name: tdd
-description: Red-green-refactor is mandatory for this user. Load BEFORE writing or modifying any production code, in any language — no implementation line is written until a focused test fails for the right reason with visible runner evidence. Run only that test and the smallest affected scope inside each cycle; run the complete CI-equivalent gate once against the final tree. Triggers on "implement", "add", "build", "fix", "refactor", a bug report, a new function/class/endpoint, or any edit to a file that has (or should have) tests. SKIP only for docs, comments, config/lockfiles, and throwaway scripts.
+description: Test-first behavior changes are mandatory for this user. Load BEFORE changing observable production behavior or fixing a bug — no behavior-changing implementation is written until a focused test fails for the predicted reason with visible runner evidence. Pure refactors start from a green affected scope and remain green. Run only the focused test and smallest affected scope inside each cycle; run the complete CI-equivalent gate once against the final tree. SKIP only for prose-only docs/comments/formatting, generated output, lockfiles, and throwaway scripts; runtime-affecting configuration is covered.
 allowed-tools: Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(npx:*), Bash(make:*), Bash(composer:*), Bash(vendor/bin/*), Bash(pytest:*), Bash(python:*), Bash(uv:*), Bash(go:*), Bash(cargo:*), Bash(dotnet:*), Bash(mvn:*), Bash(gradle:*), Bash(bundle:*), Bash(rspec:*), Bash(git:*), Read, Glob, Grep, Edit, Write
 ---
 
 # tdd
 
-One rule, and everything else follows from it:
+Two invariants govern every change:
 
-> **No line of production code is written until a test demands it — and the test has
-> been seen to fail first.**
+> **No observable production behavior changes until a focused test demands the
+> change and has been seen to fail for the predicted reason.**
+>
+> **A behavior-preserving refactor begins and remains green. Never invent a failing
+> test for behavior that must not change.**
 
-A test written after the implementation proves nothing about the implementation. It
-proves only that the code does what it already does.
+A test written after a behavior change proves only that the code does what it
+already does.
 
 ## The cycle
 
@@ -149,15 +152,18 @@ the test is wrong, say why and rewrite it deliberately.
 
 ## 🔵 Refactor
 
-Only with the focused test and affected scope green. Structure changes, behaviour
-does not.
+For a standalone behavior-preserving refactor, establish the focused test and
+affected scope green before the first production edit. If coverage is absent, add a
+characterization test and see it pass first; do not invent a failing test for
+unchanged behavior.
 
-Batch closely related structure-only edits that cannot usefully be validated
-separately. Re-run the affected scope after each logical batch, not after every edit.
-A refactor that needs a test changed is not a refactor; it is a behaviour change and
-needs its own Red first.
+For refactoring after Green, the same invariant already holds: structure changes,
+behavior does not. Batch closely related structure-only edits that cannot usefully
+be validated separately. Re-run the affected scope after each logical batch, not
+after every edit.
 
-Then start the next cycle.
+A refactor that needs an expected behavior changed is not a refactor; start a Red
+cycle for that behavior. Then continue with the next cycle.
 
 ---
 
@@ -182,17 +188,24 @@ session.
 
 ## Out of scope
 
-Docs, comments, formatting, config and lockfiles, generated code, dependency bumps,
-and genuine one-off scripts. Everything else is production code.
+Changes with no observable runtime behavior: prose-only docs and comments,
+formatting, generated output, lockfiles, and genuine one-off scripts.
+Runtime-affecting configuration is production behavior and follows the cycle.
+TDD-exempt work still receives its applicable targeted verification and final gate.
 
 ---
 
 ## Rules
 
-- No production code before a failing test.
+- No observable production behavior change before a focused test fails for the
+  predicted reason.
+- A pure refactor starts from a green affected scope and remains green.
 - Never claim Red or Green without visible runner evidence.
-- A test that passes on its first run is a defect in the test — diagnose it, never skip past it.
-- One observable contract per cycle; the focused test and affected scope are green before the next one.
-- Run the complete CI-equivalent gate once against the final tree, not inside each cycle.
+- A behavior test that passes on its first run is a defect in the test or an already
+  implemented contract — diagnose it, never skip past it.
+- One observable contract per cycle; the focused test and affected scope are green
+  before the next one.
+- Run the complete CI-equivalent gate once against the unchanged final tree, not
+  inside each cycle.
 - Never weaken, skip, or delete a test to get to Green.
-- Never write code no failing test demands.
+- Never write behavior-changing code no failing test demands.

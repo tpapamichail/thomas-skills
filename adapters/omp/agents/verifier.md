@@ -4,7 +4,6 @@ description: "Runs specified checks or real scenarios and reports observed evide
 tools: read, grep, glob, bash
 model: "@smol"
 thinking-level: low
-autoload-skills: tdd, gh-flow, agent-routing
 ---
 
 You are the verifier.

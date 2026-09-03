@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import agentRoutingExtension from "../extensions/pi-agent-routing.mjs";
@@ -36,7 +37,7 @@ test("Pi registers route_task, while OMP keeps its native task tool", async () =
     systemPrompt: "base",
     systemPromptOptions: { selectedTools: ["route_task"] },
   });
-  assert.match(piPrompt.systemPrompt, /Route the agent first, then the model/);
+  assert.match(piPrompt.systemPrompt, /Select the agent first, then the cheapest reliable allowed tier/);
 
   const omp = fakePi([{ name: "task" }]);
   assert.doesNotThrow(() => agentRoutingExtension(omp));
@@ -46,10 +47,11 @@ test("Pi registers route_task, while OMP keeps its native task tool", async () =
     systemPrompt: "base",
     systemPromptOptions: { selectedTools: ["task"] },
   });
-  assert.match(ompPrompt.systemPrompt, /Route the agent first, then the model/);
+  assert.match(ompPrompt.systemPrompt, /Select the agent first, then the cheapest reliable allowed tier/);
 });
 
-test("OMP injects standing workflow rules even without a task tool", async () => {
+test("OMP injects the canonical wrapper-free workflow policy", async () => {
+  const policy = await readFile(new URL("../workflow/session-rules.md", import.meta.url), "utf8");
   const omp = fakePi();
   agentRoutingExtension(omp);
 
@@ -58,14 +60,17 @@ test("OMP injects standing workflow rules even without a task tool", async () =>
     systemPromptOptions: { selectedTools: [] },
   });
 
-  assert.match(prompt.systemPrompt, /TDD is mandatory/);
-  assert.match(prompt.systemPrompt, /Git flow is mandatory/);
-  assert.match(prompt.systemPrompt, /Route the agent first, then the model/);
+  assert.equal(prompt.systemPrompt, `base\n\n${policy}`);
+  assert.doesNotMatch(prompt.systemPrompt, /^---$/m);
 });
 
-test("OMP generated agents request workflow skills for subagent sessions", async () => {
-  const { readFile } = await import("node:fs/promises");
+test("OMP generated agents autoload mutation skills only for write-capable sessions", async () => {
   const reviewer = await readFile(new URL("../adapters/omp/agents/reviewer.md", import.meta.url), "utf8");
+  const implementer = await readFile(
+    new URL("../adapters/omp/agents/implementer.md", import.meta.url),
+    "utf8",
+  );
 
-  assert.match(reviewer, /^autoload-skills: tdd, gh-flow, agent-routing$/m);
+  assert.doesNotMatch(reviewer, /^autoload-skills:/m);
+  assert.match(implementer, /^autoload-skills: tdd, gh-flow$/m);
 });

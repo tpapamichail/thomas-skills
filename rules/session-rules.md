@@ -1,72 +1,41 @@
 ---
-description: TDD and git flow rules that govern every session in this repo's workflow.
+description: Test-first, branch, and delegation guardrails for every coding session.
 alwaysApply: true
 ---
 
-These rules govern every session, and outrank any habit to the contrary.
+These standing guardrails apply only when their trigger matches. Detailed procedure
+lives in the named skill; do not duplicate it here.
 
-## TDD is mandatory — red → green → refactor, every project, every language
+## Test-first behavior
 
-1. NO production code before a test that fails. Not "tests after" — the focused
-   test comes first, and its visible failure must be the one you predicted.
-2. Green = the smallest complete code that passes the focused test, then only the
-   additional tests needed to complete the smallest affected scope. Do not run the
-   full repository gate inside the normal cycle.
-3. Refactor only while the affected scope is green; re-run it after each logical
-   batch, not after every edit.
-4. Fixing a bug? Step one is a test that reproduces it and fails because of it.
-5. Run the complete CI-equivalent gate once against the final tree. Any production
-   change after that evidence requires another final run.
-6. Never claim Red or Green without visible runner evidence. Do not duplicate full
-   logs already visible in the tool transcript. Never weaken, skip, delete, or
-   `.only` a test to reach Green.
+- Before changing observable production behavior or fixing a bug, load the `tdd` skill.
+- Red: run the smallest focused test and observe the predicted failure. Green: make
+  the smallest complete change, then run the focused test plus the smallest affected
+  scope. Refactor only while that scope is green.
+- For a behavior-preserving refactor, establish the affected scope green first; add
+  a characterization test when coverage is absent, but do not invent a failing test.
+- Run the CI-equivalent final gate once on the unchanged final tree; reuse valid
+  visible evidence. Never weaken, skip, or delete tests.
+- TDD-exempt: prose-only docs/comments/formatting, generated output, lockfiles, and
+  genuine throwaway scripts. Runtime-affecting configuration is not exempt. Exempt
+  never means unverified.
 
-Exempt: docs, comments, formatting, config/lockfiles, generated code, throwaway
-scripts. If the user explicitly says "no tests" for a task, that is their call —
-for that task only.
+## Branch discipline
 
-## Git flow is mandatory
+- Before the first repository change meant to land, load the `gh-flow` skill.
+- Resolve integration and production branches from repository configuration. Never
+  edit or commit there unless explicitly ordered. Reuse a task-matching feature
+  branch; create one only when absent. Never initialize git-flow silently.
+- If scope changes, ask once: keep it on the current branch, finish current then
+  start new, or park current then start new.
+- Never push or merge without explicit authorization; an explicit command already
+  authorizes that exact operation.
 
-1. Never work on `master`/`main` or `develop`. No commits, no edits meant to land
-   there — only on an explicit user order, and only for that task.
-2. Repo not initialised (`git config --get gitflow.branch.develop` is empty)?
-   Initialise it with the defaults, no prompts: `git flow init -d`.
-3. Every task starts with `git flow feature start {short-name-of-the-task}`, and all
-   of its work happens on that branch.
-4. A request that doesn't belong to the current feature? Stop and ask which branch
-   it goes on: this one, or a new feature. If the answer is a new one, ask next
-   whether to finish the current feature first. Never start the second feature on
-   top of the first without that answer.
-5. NEVER push. Ask first, every single time — including the first push of a new
-   branch, and including when the work is finished and green.
+## Delegation
 
-## Route the agent first, then the model
-
-1. Delegate only self-contained work whose isolation, specialization, or parallel
-   execution helps. Keep trivial, ambiguous, tightly coupled, integration-heavy,
-   and top-level planning work in the main session.
-2. Choose the narrowest eligible agent whose purpose, capabilities, permissions,
-   data access, and output contract fully cover the task. Honor an explicit user
-   choice only when it is capable. Never approximate with a related specialist.
-3. Distinguish local research, external research, mechanical mutation,
-   implementation, verification, independent review, and security review before
-   choosing a general worker.
-4. Only after the agent is fixed, choose the least expensive reliable model tier:
-   `fast` for bounded low-risk work, `standard` for multi-step implementation and
-   ordinary review, `deep` for high ambiguity, blast radius, adversarial analysis,
-   or security-critical reasoning.
-5. Hard capability filters come before cost: tools, modality, context, structured
-   output, provider availability, privacy, and data residency.
-6. Escalate only when evidence shows insufficient reasoning capacity. Missing
-   tools, missing permissions, or a wrong agent require rerouting, not a stronger
-   model. Never inherit an arbitrary model.
-7. Announce every delegation: `→ <agent>: <model or tier> @ <effort> — <task>`.
-   Parallelize only independent tasks.
-
-Load the `agent-routing` skill before delegation for the canonical roles, complete
-eligibility order, tier boundaries, and handoff contract.
-
-Read `skill://tdd` before the first edit, `skill://gh-flow` before branching or
-finishing, and `skill://agent-routing` before delegation, for the full cycles,
-test-runner detection, repo-specific checks, canonical roles, tier boundaries,
-and legacy-code and no-harness cases.
+- Before delegation, load the `agent-routing` skill.
+- Delegate only clear, self-contained work where specialization, isolation, or
+  parallelism beats handoff cost. Keep trivial, ambiguous, tightly coupled, and
+  integration-heavy work here.
+- Select the agent first, then the cheapest reliable allowed tier. Parallelize only
+  independent tasks and announce each delegation.
