@@ -81,6 +81,17 @@ Pi has no built-in subagent runtime, so this repository is also a Pi package:
 pi install git:github.com/tpapamichail/thomas-skills@v1.1.3
 ```
 
+The command above installs globally. To load the package only for one project,
+run the project-local install from that project's root:
+
+```bash
+pi install -l git:github.com/tpapamichail/thomas-skills@v1.1.3
+```
+
+This records the package in `.pi/settings.json`; Pi loads it only for that trusted
+project. For development against a local checkout, use
+`pi install -l /absolute/path/to/thomas-skills` instead.
+
 Configure all three model tiers globally in
 `~/.pi/agent/agent-routing.json`, or per project in
 `.pi/agent-routing.json`:
